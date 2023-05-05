@@ -7,15 +7,14 @@
 #include <SFML/Graphics.hpp>
 
 enum class PieceType {
-  LINE,
-  REVERSE_L,
-  L,
-  SQUARE,
-  Z,
-  REVERSE_Z,
-  T
+  I_SHAPE,
+  J_SHAPE,
+  L_SHAPE,
+  O_SHAPE,
+  Z_SHAPE,
+  T_SHAPE,
+  S_SHAPE
 };
-
 
 class Piece {
 
@@ -45,6 +44,18 @@ protected:
 
   Piece(BaseSquare grid, std::string color, sf::Vector2f top_left, PieceType type):
     grid{grid}, color{color}, top_left{top_left}, type{type} {}
+};
+
+class OShape : public Piece {
+public:
+  OShape(std::string color, sf::Vector2f top_left):
+    Piece{{{ {{1, 1, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::O_SHAPE} {}
+};
+
+class LShape : public Piece {
+public:
+  LShape(std::string color, sf::Vector2f top_left):
+    Piece{{{ {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::L_SHAPE} {}
 };
 
 #endif
