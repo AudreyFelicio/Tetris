@@ -27,7 +27,7 @@ protected:
   
   auto spawnRandomPiece() {
     srand((unsigned) time(NULL));
-    LShape random_piece(sf::Color::Blue, sf::Vector2f(rand() % (WIDTH - BASE_SIZE) * LENGTH, 0.0));
+    LShape random_piece(sf::Color::Blue, sf::Vector2f(rand() % (WIDTH - BASE_SIZE) * UNIT_SQUARE_LENGTH, 0.0));
     pieces.push_back(random_piece);
   }
 };
