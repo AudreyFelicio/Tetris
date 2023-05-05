@@ -5,6 +5,9 @@
 #include <string>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+#include <chrono>
+#include <thread>
+#include <iostream>
 
 enum class PieceType {
   I_SHAPE,
@@ -36,6 +39,25 @@ public:
     }
   }
 
+  void handleKeyboardInput(sf::Keyboard::Key input) {
+    if (input == sf::Keyboard::Left)
+    {
+      moveLeft();
+    }
+    else if (input == sf::Keyboard::Right)
+    {
+      moveRight();
+    }
+    else if (input == sf::Keyboard::Up)
+    {
+      rotateClockwise();
+    }    
+    else if (input == sf::Keyboard::Down)
+    {
+      rotateCounterclockwise();
+    }
+  }
+
 
 
 protected:
@@ -43,11 +65,52 @@ protected:
   sf::Color color;
   sf::Vector2f top_left;
   PieceType type;
+  std::chrono::high_resolution_clock::time_point last_keyboard_input;
 
   Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type):
-    grid{grid}, color{color}, top_left{top_left}, type{type} {}
+    grid{grid}, color{color}, top_left{top_left}, type{type} {
+      last_keyboard_input = std::chrono::high_resolution_clock::now();
+    }
 
+  void moveRight() {
+    top_left.x += LENGTH;
+  }
 
+  void moveLeft() {
+    top_left.x -= LENGTH;
+  }
+
+  void rotateClockwise() {
+    BaseSquare result;
+
+    for (int i = 0; i < BASE_SIZE; i++) {
+      for (int j = 0; j < BASE_SIZE; j++) {
+        result[i][j] = grid[BASE_SIZE - j - 1][i];
+      }
+    }
+
+    for (int i = 0; i < BASE_SIZE; i++) {
+      for (int j = 0; j < BASE_SIZE; j++) {
+        grid[i][j] = result[i][j];
+      }
+    }
+  }
+
+  void rotateCounterclockwise() {
+    BaseSquare result;
+
+    for (int i = 0; i < BASE_SIZE; i++) {
+      for (int j = 0; j < BASE_SIZE; j++) {
+        result[i][j] = grid[j][BASE_SIZE - i - 1];
+      }
+    }
+
+    for (int i = 0; i < BASE_SIZE; i++) {
+      for (int j = 0; j < BASE_SIZE; j++) {
+        grid[i][j] = result[i][j];
+      }
+    }
+  }
 };
 
 class OShape : public Piece {

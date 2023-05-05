@@ -18,9 +18,11 @@ auto main() -> int {
     for (auto event = sf::Event{}; window.pollEvent(event); ) {
       if (event.type == sf::Event::Closed) {
         window.close();
+      } else if (event.type == sf::Event::KeyPressed) {
+        sq.handleKeyboardInput(event.key.code);
+        l.handleKeyboardInput(event.key.code);
       }
     }
-    
     window.clear();
     sq.draw(window);
     l.draw(window);
