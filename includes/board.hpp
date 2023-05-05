@@ -9,6 +9,7 @@
 #include <thread>
 #include <iostream>
 #include <vector>
+#include <random>
 #include "piece.hpp"
 #include "constants.hpp"
 
@@ -25,9 +26,10 @@ protected:
   Board(BaseBoard grid, sf::Color color, sf::Vector2f top_left):
     grid{grid}, color{color}, top_left{top_left} {}
   
-  auto spawnRandomPiece() {
-    srand((unsigned) time(NULL));
-    LShape random_piece(sf::Color::Blue, sf::Vector2f(rand() % (WIDTH - BASE_SIZE) * UNIT_SQUARE_LENGTH, 0.0));
+  auto spawnRandomPiece() -> void {
+    std::random_device rng;
+    std::uniform_int_distribution<size_t> dist(0, WIDTH - BASE_SIZE);
+    LShape random_piece(sf::Color::Blue, sf::Vector2f(dist(rng) * UNIT_SQUARE_LENGTH, 0.0));
     pieces.push_back(random_piece);
   }
 };

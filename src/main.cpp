@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "piece.hpp"
+#include "board.hpp"
 
 auto main() -> int {
   std::vector<Piece> pieces = {
