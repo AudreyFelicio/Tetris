@@ -11,6 +11,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(Tetris src/main.cpp)
+target_include_directories(Tetris PRIVATE includes)
 target_link_libraries(Tetris PRIVATE sfml-graphics)
 target_compile_features(Tetris PRIVATE cxx_std_17)
 if (WIN32 AND BUILD_SHARED_LIBS)

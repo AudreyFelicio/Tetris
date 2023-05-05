@@ -1,7 +1,9 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include "unit_square.hpp"
 
 auto main() -> int {
+  UnitSquare u;
+
   auto window = sf::RenderWindow{ { 1920u, 1080u }, "Tetris" };
   window.setFramerateLimit(144);
   while (window.isOpen()) {
