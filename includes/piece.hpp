@@ -39,26 +39,28 @@ public:
     }
   }
 
-  void handleKeyboardInput(sf::Keyboard::Key input) {
-    if (input == sf::Keyboard::Left)
-    {
-      moveLeft();
-    }
-    else if (input == sf::Keyboard::Right)
-    {
-      moveRight();
-    }
-    else if (input == sf::Keyboard::Up)
-    {
-      rotateClockwise();
-    }    
-    else if (input == sf::Keyboard::Down)
-    {
-      rotateCounterclockwise();
+  auto handleKeyboardInput(sf::Keyboard::Key input) -> void {
+    switch (input) {
+      case sf::Keyboard::Left:
+        moveLeft();
+        break;
+      case sf::Keyboard::Right:
+        moveRight();
+        break;
+      case sf::Keyboard::Up:
+        rotateClockwise();
+        break;
+      case sf::Keyboard::Down:
+        rotateCounterclockwise();
+        break;
+      default:
+        break;
     }
   }
 
-
+  auto moveDown() -> void {
+    top_left.y += LENGTH;
+  }
 
 protected:
   BaseSquare grid;
@@ -72,15 +74,15 @@ protected:
       last_keyboard_input = std::chrono::high_resolution_clock::now();
     }
 
-  void moveRight() {
+  auto moveRight() -> void {
     top_left.x += LENGTH;
   }
 
-  void moveLeft() {
+  auto moveLeft() -> void {
     top_left.x -= LENGTH;
   }
 
-  void rotateClockwise() {
+  auto rotateClockwise() -> void {
     BaseSquare result;
 
     for (int i = 0; i < BASE_SIZE; i++) {
@@ -96,7 +98,7 @@ protected:
     }
   }
 
-  void rotateCounterclockwise() {
+  auto rotateCounterclockwise() -> void {
     BaseSquare result;
 
     for (int i = 0; i < BASE_SIZE; i++) {

@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-sf::Color createColorFromString(const std::string& hexString) {
+auto createColorFromString(const std::string& hexString) -> sf::Color {
   // remove '#' character from the beginning of the string, if it exists
   std::string trimmedString = hexString;
   if (trimmedString[0] == '#') {

@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <string>
+#include <iostream>
 #include "piece.hpp"
 
 auto main() -> int {
@@ -14,7 +15,17 @@ auto main() -> int {
 
   auto window = sf::RenderWindow{ { 1920u, 1080u }, "Tetris" };
   window.setFramerateLimit(144);
+
+  sf::Clock clock;
+  sf::Time total_elapsed = sf::milliseconds(0);
   while (window.isOpen()) {
+    total_elapsed += clock.restart();
+    if (total_elapsed >= sf::milliseconds(1'000)) {
+      sq.moveDown();
+      l.moveDown();
+      total_elapsed = sf::milliseconds(0);
+    }
+
     for (auto event = sf::Event{}; window.pollEvent(event); ) {
       if (event.type == sf::Event::Closed) {
         window.close();
