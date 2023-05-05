@@ -8,6 +8,9 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <set>
+#include <math.h>
+#include <tuple>
 #include "constants.hpp"
 
 enum class PieceType {
@@ -38,47 +41,20 @@ public:
     }
   }
 
-  auto handleKeyboardInput(sf::Keyboard::Key input) -> void {
-    switch (input) {
-      case sf::Keyboard::Left:
-        moveLeft();
-        break;
-      case sf::Keyboard::Right:
-        moveRight();
-        break;
-      case sf::Keyboard::Up:
-        rotateClockwise();
-        break;
-      case sf::Keyboard::Down:
-        rotateCounterclockwise();
-        break;
-      default:
-        break;
-    }
-  }
-
-  auto moveDown() -> void {
-    top_left.y += UNIT_SQUARE_LENGTH;
-  }
-
-protected:
-  BaseSquare grid;
-  sf::Color color;
-  sf::Vector2f top_left;
-  PieceType type;
-  std::chrono::high_resolution_clock::time_point last_keyboard_input;
-
-  Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type):
-    grid{grid}, color{color}, top_left{top_left}, type{type} {
-      last_keyboard_input = std::chrono::high_resolution_clock::now();
-    }
-
   auto moveRight() -> void {
     top_left.x += UNIT_SQUARE_LENGTH;
   }
 
   auto moveLeft() -> void {
     top_left.x -= UNIT_SQUARE_LENGTH;
+  }
+
+  auto moveDown() -> void {
+    top_left.y += UNIT_SQUARE_LENGTH;
+  }
+
+  auto moveUp() -> void {
+    top_left.y -= UNIT_SQUARE_LENGTH;
   }
 
   auto rotateClockwise() -> void {
@@ -112,6 +88,107 @@ protected:
       }
     }
   }
+
+
+
+  auto getLeftBoundary() {
+    int leftMost = 0;
+    for (int col = 0; col < BASE_SIZE; col++) {
+      bool edgeFound = false;
+      for (int row = 0; row < BASE_SIZE; row++) {
+        if (grid[row][col]) {
+          edgeFound = true;
+          break;
+        }
+      }
+      if (edgeFound) {
+        break;
+      }
+      leftMost++;
+    }
+    return top_left.x + leftMost * UNIT_SQUARE_LENGTH;
+  }
+
+  auto getRightBoundary() {
+    int rightMost = BASE_SIZE;
+    for (int col = BASE_SIZE - 1; col >= 0; col--) {
+      bool edgeFound = false;
+      for (int row = 0; row < BASE_SIZE; row++) {
+        if (grid[row][col]) {
+          edgeFound = true;
+          break;
+        }
+      }
+      if (edgeFound) {
+        break;
+      }
+      rightMost--;
+    }
+    return top_left.x + rightMost * UNIT_SQUARE_LENGTH;
+  }
+
+  auto getBottomBoundary() {
+    int bottomMost = BASE_SIZE;
+    for (int row = BASE_SIZE - 1; row >= 0; row--) {
+      bool edgeFound = false;
+      for (int col = 0; col < BASE_SIZE; col++) {
+        if (grid[row][col]) {
+          edgeFound = true;
+          break;
+        }
+      }
+      if (edgeFound) {
+        break;
+      }
+      bottomMost--;
+    }
+    return top_left.y + bottomMost * UNIT_SQUARE_LENGTH;
+  }
+
+  auto getPoints() -> std::set<std::pair<int, int> > {
+    std::set<std::pair<int, int> > points;
+    int i_offset = round(top_left.y / UNIT_SQUARE_LENGTH);
+    int j_offset = round(top_left.x / UNIT_SQUARE_LENGTH);
+
+    for (int i = 0; i < BASE_SIZE; ++i) {
+      for (int j = 0; j < BASE_SIZE; ++j) {
+        if (grid[i][j]) {
+          points.insert(std::make_pair(i + i_offset, j + j_offset));
+        }
+      }
+    }
+    return points;
+  }
+
+  auto collidesWithOtherPiece(Piece otherPiece) -> bool {
+    std::set<std::pair<int, int> > myPoints = getPoints(), otherPoints = otherPiece.getPoints();
+    for (auto &p: myPoints) {
+      if (otherPoints.count(p)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  auto outsideBoundaries(float left, float right, float top, float bottom) -> bool {
+    return getLeftBoundary() < left or getRightBoundary() > right or getBottomBoundary() > bottom;
+  }
+
+  auto getGrid() -> BaseSquare {
+    return grid;
+  }
+
+protected:
+  BaseSquare grid;
+  sf::Color color;
+  sf::Vector2f top_left;
+  PieceType type;
+  std::chrono::high_resolution_clock::time_point last_keyboard_input;
+
+  Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type):
+    grid{grid}, color{color}, top_left{top_left}, type{type} {
+      last_keyboard_input = std::chrono::high_resolution_clock::now();
+    }
 };
 
 class OShape : public Piece {
