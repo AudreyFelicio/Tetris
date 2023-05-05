@@ -36,25 +36,29 @@ public:
     }
   }
 
+
+
 protected:
   BaseSquare grid;
-  std::string color;
+  sf::Color color;
   sf::Vector2f top_left;
   PieceType type;
 
-  Piece(BaseSquare grid, std::string color, sf::Vector2f top_left, PieceType type):
+  Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type):
     grid{grid}, color{color}, top_left{top_left}, type{type} {}
+
+
 };
 
 class OShape : public Piece {
 public:
-  OShape(std::string color, sf::Vector2f top_left):
+  OShape(sf::Color color, sf::Vector2f top_left):
     Piece{{{ {{1, 1, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::O_SHAPE} {}
 };
 
 class LShape : public Piece {
 public:
-  LShape(std::string color, sf::Vector2f top_left):
+  LShape(sf::Color color, sf::Vector2f top_left):
     Piece{{{ {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::L_SHAPE} {}
 };
 

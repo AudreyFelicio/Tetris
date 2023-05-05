@@ -4,8 +4,8 @@
 #include "piece.hpp"
 
 auto main() -> int {
-  OShape sq("#FFFFFF", {100.0f, 100.0f});
-  LShape l("#FFFFFF", {200.0f, 200.0f});
+  OShape sq(sf::Color::Blue, {100.0f, 100.0f});
+  LShape l(sf::Color::Blue, {200.0f, 200.0f});
   const float LENGTH = 10.0;
   sf::Vector2f top_left(100.0f, 100.0f);
   sf::RectangleShape square(sf::Vector2f(LENGTH, LENGTH));
