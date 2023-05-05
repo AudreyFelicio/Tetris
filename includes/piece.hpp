@@ -2,7 +2,9 @@
 #define PIECE_HPP
 
 #include <array>
-#include "grid.hpp"
+#include <string>
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 
 enum class PieceType {
   LINE,
@@ -14,20 +16,35 @@ enum class PieceType {
   T
 };
 
+
 class Piece {
+
+static constexpr float LENGTH = 5.0;
+static constexpr size_t BASE_SIZE = 4;
+using BaseSquare = std::array<std::array<bool, BASE_SIZE>, BASE_SIZE>;
+
 public:
   auto draw(sf::RenderWindow& window) -> void {
-    for (const auto& pixel : grid.getDisplay()) {
-      window.draw(pixel);
+    for (auto row = 0; row < BASE_SIZE; row++) {
+      for (auto col = 0; col < BASE_SIZE; col++) {
+        if (grid[row][col]) {
+          sf::RectangleShape square(sf::Vector2f(LENGTH, LENGTH));
+          square.setPosition(sf::Vector2f(top_left.x + LENGTH * col, top_left.y + LENGTH * row));
+          square.setFillColor(sf::Color::Blue);
+          window.draw(square);
+        }
+      }
     }
   }
 
 protected:
-  Grid grid;
+  BaseSquare grid;
+  std::string color;
+  sf::Vector2f top_left;
   PieceType type;
 
-  Piece(BaseSquare square, std::string color, sf::Vector2f top_left, PieceType type):
-    grid{square, color, top_left}, type{type} {}
+  Piece(BaseSquare grid, std::string color, sf::Vector2f top_left, PieceType type):
+    grid{grid}, color{color}, top_left{top_left}, type{type} {}
 };
 
 #endif

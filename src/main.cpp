@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <string>
-#include "grid.hpp"
 #include "square.hpp"
 
 auto main() -> int {
