@@ -26,7 +26,7 @@ static constexpr size_t BASE_SIZE = 4;
 using BaseSquare = std::array<std::array<bool, BASE_SIZE>, BASE_SIZE>;
 
 public:
-  auto draw(sf::RenderWindow& window) -> void {
+  auto draw(sf::RenderWindow& window) const -> void {
     for (auto row = 0; row < BASE_SIZE; row++) {
       for (auto col = 0; col < BASE_SIZE; col++) {
         if (grid[row][col]) {
@@ -125,6 +125,36 @@ class LShape : public Piece {
 public:
   LShape(sf::Color color, sf::Vector2f top_left):
     Piece{{{ {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::L_SHAPE} {}
+};
+
+class IShape : public Piece {
+public:
+  IShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 0, 0, 0}} }}, color, top_left, PieceType::I_SHAPE} {}
+};
+
+class JShape : public Piece {
+public:
+  JShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{0, 1, 0, 0}}, {{0, 1, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::J_SHAPE} {}
+};
+
+class ZShape : public Piece {
+public:
+  ZShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{1, 1, 0, 0}}, {{0, 1, 1, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::Z_SHAPE} {}
+};
+
+class TShape : public Piece {
+public:
+  TShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{1, 1, 1, 0}}, {{0, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::T_SHAPE} {}
+};
+
+class SShape : public Piece {
+public:
+  SShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{0, 1, 1, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::S_SHAPE} {}
 };
 
 #endif
