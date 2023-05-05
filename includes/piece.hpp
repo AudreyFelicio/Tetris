@@ -8,6 +8,7 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include "constants.hpp"
 
 enum class PieceType {
   I_SHAPE,
@@ -20,9 +21,6 @@ enum class PieceType {
 };
 
 class Piece {
-
-static constexpr float LENGTH = 5.0;
-static constexpr size_t BASE_SIZE = 4;
 using BaseSquare = std::array<std::array<bool, BASE_SIZE>, BASE_SIZE>;
 
 public:
@@ -31,8 +29,8 @@ public:
     for (auto row = 0; row < BASE_SIZE; row++) {
       for (auto col = 0; col < BASE_SIZE; col++) {
         if (grid[row][col]) {
-          sf::RectangleShape square(sf::Vector2f(LENGTH, LENGTH));
-          square.setPosition(sf::Vector2f(top_left.x + LENGTH * col, top_left.y + LENGTH * row));
+          sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH, UNIT_SQUARE_LENGTH));
+          square.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
           square.setFillColor(sf::Color::Blue);
           window.draw(square);
         }
@@ -60,7 +58,7 @@ public:
   }
 
   auto moveDown() -> void {
-    top_left.y += LENGTH;
+    top_left.y += UNIT_SQUARE_LENGTH;
   }
 
 protected:
@@ -76,11 +74,11 @@ protected:
     }
 
   auto moveRight() -> void {
-    top_left.x += LENGTH;
+    top_left.x += UNIT_SQUARE_LENGTH;
   }
 
   auto moveLeft() -> void {
-    top_left.x -= LENGTH;
+    top_left.x -= UNIT_SQUARE_LENGTH;
   }
 
   auto rotateClockwise() -> void {

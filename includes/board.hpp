@@ -8,18 +8,13 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <piece.hpp>
 #include <vector>
+#include "piece.hpp"
+#include "constants.hpp"
 
 class Board {
-
-static constexpr float LENGTH = 5.0;
-static constexpr size_t BASE_SIZE = 4, WIDTH = 10, HEIGHT = 20;
 using BaseBoard = std::array<std::array<bool, WIDTH>, HEIGHT>;
-
 public:
-  
-  
 
 protected:
   BaseBoard grid;
