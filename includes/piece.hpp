@@ -27,7 +27,7 @@ using BaseSquare = std::array<std::array<bool, BASE_SIZE>, BASE_SIZE>;
 
 public:
 
-  auto draw(sf::RenderWindow& window) -> void {
+  auto draw(sf::RenderWindow& window) const -> void {
     for (auto row = 0; row < BASE_SIZE; row++) {
       for (auto col = 0; col < BASE_SIZE; col++) {
         if (grid[row][col]) {
@@ -40,23 +40,27 @@ public:
     }
   }
 
-  void handleKeyboardInput(sf::Keyboard::Key input) {
-    if (input == sf::Keyboard::Left)
-    {
-      moveLeft();
+  auto handleKeyboardInput(sf::Keyboard::Key input) -> void {
+    switch (input) {
+      case sf::Keyboard::Left:
+        moveLeft();
+        break;
+      case sf::Keyboard::Right:
+        moveRight();
+        break;
+      case sf::Keyboard::Up:
+        rotateClockwise();
+        break;
+      case sf::Keyboard::Down:
+        rotateCounterclockwise();
+        break;
+      default:
+        break;
     }
-    else if (input == sf::Keyboard::Right)
-    {
-      moveRight();
-    }
-    else if (input == sf::Keyboard::Up)
-    {
-      rotateClockwise();
-    }    
-    else if (input == sf::Keyboard::Down)
-    {
-      rotateCounterclockwise();
-    }
+  }
+
+  auto moveDown() -> void {
+    top_left.y += LENGTH;
   }
 
 protected:
@@ -71,15 +75,15 @@ protected:
       last_keyboard_input = std::chrono::high_resolution_clock::now();
     }
 
-  void moveRight() {
+  auto moveRight() -> void {
     top_left.x += LENGTH;
   }
 
-  void moveLeft() {
+  auto moveLeft() -> void {
     top_left.x -= LENGTH;
   }
 
-  void rotateClockwise() {
+  auto rotateClockwise() -> void {
     BaseSquare result;
 
     for (int i = 0; i < BASE_SIZE; i++) {
@@ -95,7 +99,7 @@ protected:
     }
   }
 
-  void rotateCounterclockwise() {
+  auto rotateCounterclockwise() -> void {
     BaseSquare result;
 
     for (int i = 0; i < BASE_SIZE; i++) {
@@ -122,6 +126,36 @@ class LShape : public Piece {
 public:
   LShape(sf::Color color, sf::Vector2f top_left):
     Piece{{{ {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::L_SHAPE} {}
+};
+
+class IShape : public Piece {
+public:
+  IShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 0, 0, 0}}, {{1, 0, 0, 0}} }}, color, top_left, PieceType::I_SHAPE} {}
+};
+
+class JShape : public Piece {
+public:
+  JShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{0, 1, 0, 0}}, {{0, 1, 0, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::J_SHAPE} {}
+};
+
+class ZShape : public Piece {
+public:
+  ZShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{1, 1, 0, 0}}, {{0, 1, 1, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::Z_SHAPE} {}
+};
+
+class TShape : public Piece {
+public:
+  TShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{1, 1, 1, 0}}, {{0, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::T_SHAPE} {}
+};
+
+class SShape : public Piece {
+public:
+  SShape(sf::Color color, sf::Vector2f top_left):
+    Piece{{{ {{0, 1, 1, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::S_SHAPE} {}
 };
 
 #endif
