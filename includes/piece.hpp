@@ -26,6 +26,7 @@ static constexpr size_t BASE_SIZE = 4;
 using BaseSquare = std::array<std::array<bool, BASE_SIZE>, BASE_SIZE>;
 
 public:
+
   auto draw(sf::RenderWindow& window) const -> void {
     for (auto row = 0; row < BASE_SIZE; row++) {
       for (auto col = 0; col < BASE_SIZE; col++) {
