@@ -11,6 +11,7 @@
 #include <set>
 #include <math.h>
 #include <tuple>
+#include <random>
 #include "constants.hpp"
 
 enum class PieceType {
@@ -34,7 +35,7 @@ public:
         if (grid[row][col]) {
           sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH, UNIT_SQUARE_LENGTH));
           square.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
-          square.setFillColor(sf::Color::Blue);
+          square.setFillColor(color);
           window.draw(square);
         }
       }
@@ -232,5 +233,28 @@ public:
   SShape(sf::Color color, sf::Vector2f top_left):
     Piece{{{ {{0, 1, 1, 0}}, {{1, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}} }}, color, top_left, PieceType::S_SHAPE} {}
 };
+
+auto generateRandomPiece(sf::Color color, sf::Vector2f top_left) -> Piece {
+  std::random_device rng;
+  std::uniform_int_distribution<size_t> choice_distribution(0, 7);
+
+  int choice = choice_distribution(rng);
+    switch (choice) {
+      case 0:
+        return OShape(color, top_left);
+      case 1:
+        return LShape(color, top_left);
+      case 2:
+        return IShape(color, top_left);
+      case 3:
+        return JShape(color, top_left);
+      case 4:    
+        return ZShape(color, top_left);
+      case 5:
+        return TShape(color, top_left);
+      default:
+        return SShape(color, top_left);
+    }
+}
 
 #endif

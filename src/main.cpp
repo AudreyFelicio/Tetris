@@ -64,16 +64,11 @@ auto main() -> int {
         window.close();
       } 
       else if (event.type == sf::Event::KeyPressed) {
-        // for (auto& piece : pieces)
-        //   piece.handleKeyboardInput(event.key.code);
         board.handleKeyboardInput(event.key.code);
       }
     }
     window.clear();
     board.draw(window);
-    // for (const auto& piece : pieces) {
-    //   piece.draw(window);
-    // }
     window.display();
   }
 }

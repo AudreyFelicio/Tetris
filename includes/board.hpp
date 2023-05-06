@@ -23,8 +23,15 @@ public:
 
   auto spawnRandomPiece() -> void {
     std::random_device rng;
+
+    std::uniform_int_distribution<size_t> color_distribution(0, 255);
+    sf::Color random_color(color_distribution(rng), color_distribution(rng), color_distribution(rng));
+
     std::uniform_int_distribution<size_t> dist(0, WIDTH - BASE_SIZE);
-    LShape random_piece(sf::Color::Blue, sf::Vector2f(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y));
+    sf::Vector2f random_position(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y);
+
+    Piece random_piece = generateRandomPiece(random_color, random_position);
+    
     pieces.push_back(random_piece);
     control_index = pieces.size() - 1;
   }
