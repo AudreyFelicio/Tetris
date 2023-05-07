@@ -35,7 +35,7 @@ public:
   }
 
   auto draw(sf::RenderWindow& window) -> void {
-    window.draw(title);
+    // window.draw(title);
     window.draw(score);
     board.draw(window);
   }
@@ -57,12 +57,15 @@ protected:
   sf::Font font;
   sf::Text title;
   sf::Text score;
+  sf::Text level;
+
   bool is_paused = false;
   int current_score = 0;
+  int current_level = 1;
   Board board = Board::createNewBoard(BOARD_POSITION);
 
   auto initFont() -> void {
-    font.loadFromFile("./Roboto-Black.ttf");
+    font.loadFromFile("./resources/font/telelower.ttf");
   }
 
   auto initTitle() -> void {
@@ -70,19 +73,19 @@ protected:
     title.setFont(font);
     title.setCharacterSize(FONT_SIZE);
     title.setPosition(TITLE_POSITION);
-    title.setFillColor(sf::Color::Red);
+    title.setFillColor(sf::Color::White);
   }
 
   auto initScore() -> void {
-    score.setString(SCORE + " " + std::to_string(current_score));
+    score.setString(std::to_string(current_score));
     score.setFont(font);
     score.setCharacterSize(FONT_SIZE);
     score.setPosition(SCORE_POSITION);
-    score.setFillColor(sf::Color::Red);
+    score.setFillColor(BEIGE);
   }
 
   auto updateScore() -> void {
-    score.setString(SCORE + " " + std::to_string(++current_score));
+    score.setString(std::to_string(++current_score));
   }
 };
 
