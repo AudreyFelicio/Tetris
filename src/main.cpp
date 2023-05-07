@@ -15,7 +15,7 @@ auto main() -> int {
 
   sf::Texture background_texture;
   if (!background_texture.loadFromFile("./resources/image/Background/background_smooth.jpeg")) {
-    printf("Error in loading texture\n");
+    printf("Error in loading texture.\n");
   }
   background_texture.setSmooth(true);
 
@@ -42,7 +42,7 @@ auto main() -> int {
       }
     }
     window.clear();
-    window.draw(background);
+    window.draw(background); 
     game.draw(window);
     window.display();
   }
