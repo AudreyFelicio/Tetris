@@ -14,8 +14,14 @@
 #include "constants.hpp"
 
 class Board {
-using BaseBoard = std::array<std::array<bool, WIDTH>, HEIGHT>;
+using BaseBoard = std::array<std::array<bool, BOARD_WIDTH>, BOARD_HEIGHT>;
 public:
+  static auto createNewBoard(sf::Vector2f pos) -> Board {
+    std::array<std::array<bool, BOARD_WIDTH>, BOARD_HEIGHT> newGrid;
+    Board board(newGrid, sf::Color::White, pos);
+    return board;
+  }
+
   Board(BaseBoard grid, sf::Color color, sf::Vector2f top_left):
     grid{grid}, color{color}, top_left{top_left} {
       background = createBackground();
@@ -27,7 +33,7 @@ public:
     std::uniform_int_distribution<size_t> color_distribution(0, 255);
     sf::Color random_color(color_distribution(rng), color_distribution(rng), color_distribution(rng));
 
-    std::uniform_int_distribution<size_t> dist(0, WIDTH - BASE_SIZE);
+    std::uniform_int_distribution<size_t> dist(0, BOARD_WIDTH - BASE_SIZE);
     sf::Vector2f random_position(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y);
 
     Piece random_piece = generateRandomPiece(random_color, random_position);
@@ -43,7 +49,7 @@ public:
     }
   }
 
-  auto moveDown() -> void {
+  auto next() -> void {
     if (control_index == -1) {
       spawnRandomPiece();
       return;
@@ -57,6 +63,12 @@ public:
     if (!validMove()) {
       pieces[control_index].moveUp();
       spawnRandomPiece();
+
+      pieces[control_index].moveDown();
+      if (!validMove()) {
+        pieces[control_index].moveUp();
+        has_ended = true;
+      }
     }
   }
 
@@ -94,6 +106,10 @@ public:
         break;
     }
   }
+
+  auto getHasEnded() -> bool {
+    return has_ended;
+  }
   
 
 protected:
@@ -103,9 +119,10 @@ protected:
   std::vector<Piece> pieces;
   sf::RectangleShape background;
   int control_index = -1;
+  bool has_ended = false;
   
   auto createBackground() -> sf::RectangleShape {
-    sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH * WIDTH, UNIT_SQUARE_LENGTH * HEIGHT));
+    sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH * BOARD_WIDTH, UNIT_SQUARE_LENGTH * BOARD_HEIGHT));
     square.setPosition(top_left);
     square.setFillColor(color);
     return square;
@@ -116,7 +133,7 @@ protected:
       return true;
     }
 
-    if (pieces[control_index].outsideBoundaries(top_left.x, top_left.x + (WIDTH * UNIT_SQUARE_LENGTH), top_left.y, top_left.y + (HEIGHT * UNIT_SQUARE_LENGTH))) {
+    if (pieces[control_index].outsideBoundaries(top_left.x, top_left.x + (BOARD_WIDTH * UNIT_SQUARE_LENGTH), top_left.y, top_left.y + (BOARD_HEIGHT * UNIT_SQUARE_LENGTH))) {
       return false;
     }
 
