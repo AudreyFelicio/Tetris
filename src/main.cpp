@@ -14,7 +14,7 @@ auto main() -> int {
   window.setFramerateLimit(144);
 
   sf::Texture background_texture;
-  if (!background_texture.loadFromFile("./resources/image/Background/background_smooth.jpeg")) {
+  if (!background_texture.loadFromFile("./resources/image/Background/background_smooth_no_text.png")) {
     printf("Error in loading texture.\n");
   }
   background_texture.setSmooth(true);

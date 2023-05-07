@@ -13,6 +13,8 @@
 #include "piece.hpp"
 #include "board.hpp"
 #include "constants.hpp"
+#include <iomanip>
+#include <sstream>
 
 class Game {
 public:
@@ -35,7 +37,7 @@ public:
   }
 
   auto draw(sf::RenderWindow& window) -> void {
-    // window.draw(title);
+    window.draw(title);
     window.draw(score);
     board.draw(window);
   }
@@ -71,13 +73,15 @@ protected:
   auto initTitle() -> void {
     title.setString(TITLE);
     title.setFont(font);
-    title.setCharacterSize(FONT_SIZE);
+    title.setCharacterSize(FONT_SIZE * 2);
     title.setPosition(TITLE_POSITION);
-    title.setFillColor(sf::Color::White);
+    title.setFillColor(ORANGE);
   }
 
   auto initScore() -> void {
-    score.setString(std::to_string(current_score));
+    std::ostringstream oss;
+    oss << SCORE << std::setw(4) << std::setfill(' ') << std::right << current_score;
+    score.setString(oss.str());
     score.setFont(font);
     score.setCharacterSize(FONT_SIZE);
     score.setPosition(SCORE_POSITION);
@@ -85,7 +89,9 @@ protected:
   }
 
   auto updateScore() -> void {
-    score.setString(std::to_string(++current_score));
+    std::ostringstream oss;
+    oss << SCORE << std::setw(4) << std::setfill(' ') << std::right << ++current_score;
+    score.setString(oss.str());
   }
 };
 
