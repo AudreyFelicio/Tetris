@@ -7,7 +7,9 @@
 #include <SFML/Graphics.hpp>
 
 constexpr float UNIT_SQUARE_LENGTH = 20.0;
-constexpr size_t BASE_SIZE = 4;
+constexpr size_t LARGE_SIZE = 4;
+constexpr size_t MEDIUM_SIZE = 3;
+constexpr size_t SMALL_SIZE = 2;
 constexpr size_t BOARD_WIDTH = 20;
 constexpr size_t BOARD_HEIGHT = 30;
 constexpr int SCREEN_WIDTH = 590;

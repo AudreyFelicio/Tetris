@@ -33,7 +33,7 @@ public:
     std::uniform_int_distribution<size_t> color_distribution(0, 255);
     sf::Color random_color(color_distribution(rng), color_distribution(rng), color_distribution(rng));
 
-    std::uniform_int_distribution<size_t> dist(0, BOARD_WIDTH - BASE_SIZE);
+    std::uniform_int_distribution<size_t> dist(0, BOARD_WIDTH - LARGE_SIZE);
     sf::Vector2f random_position(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y);
 
     Piece random_piece = generateRandomPiece(random_color, random_position);
