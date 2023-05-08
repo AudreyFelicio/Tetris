@@ -36,8 +36,7 @@ auto main() -> int {
     for (auto event = sf::Event{}; window.pollEvent(event); ) {
       if (event.type == sf::Event::Closed) {
         window.close();
-      } 
-      else if (event.type == sf::Event::KeyPressed) {
+      }  else if (event.type == sf::Event::KeyPressed) {
         game.handleKeyboardInput(event.key.code);
       }
     }
