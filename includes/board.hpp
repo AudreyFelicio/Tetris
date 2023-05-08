@@ -21,7 +21,7 @@ public:
   static auto createNewBoard(sf::Vector2f pos) -> Board {
     BaseBoard newGrid;
     for (auto i = 0; i < BOARD_HEIGHT; ++i) {
-      std::ranges::fill(newGrid[i].begin(), newGrid[i].end(), -1);
+      std::fill(newGrid[i].begin(), newGrid[i].end(), -1);
     }
     Board board(newGrid, sf::Color::White, pos);
     return board;
@@ -62,10 +62,10 @@ public:
     }
 
     updateGrid();
-    clearLines();
 
     pieces[control_index].moveDown();
     if (!validMove()) {
+      clearLines();
       pieces[control_index].moveUp();
       spawnRandomPiece();
       if (!validMove()) {
@@ -155,7 +155,7 @@ private:
   auto updateGrid() -> void {
     BaseBoard newGrid;
     for (auto i = 0; i < BOARD_HEIGHT; ++i) {
-      std::ranges::fill(newGrid[i].begin(), newGrid[i].end(), -1);
+      std::fill(newGrid[i].begin(), newGrid[i].end(), -1);
     }
     grid = newGrid;
 
