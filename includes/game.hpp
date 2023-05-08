@@ -18,7 +18,7 @@
 
 class Game {
 public:
-  Game() {
+  Game(): board{Board::createNewBoard(BOARD_POSITION)} {
     initFont();
     initTitle();
     initScore();
@@ -65,7 +65,7 @@ private:
   bool is_paused = false;
   int current_score = 0;
   int current_level = 1;
-  Board board = Board::createNewBoard(BOARD_POSITION);
+  Board board;
 
   auto initFont() -> void {
     font.loadFromFile("./resources/font/telelower.ttf");

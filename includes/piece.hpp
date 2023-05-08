@@ -28,7 +28,6 @@ class Piece {
 using BaseSquare = std::array<std::array<bool, LARGE_SIZE>, LARGE_SIZE>;
 
 public:
-
   auto draw(sf::RenderWindow& window) const -> void {
     for (auto row = 0; row < BASE_SIZE; row++) {
       for (auto col = 0; col < BASE_SIZE; col++) {
@@ -89,8 +88,6 @@ public:
       }
     }
   }
-
-
 
   auto getLeftBoundary() {
     int leftMost = 0;
@@ -179,6 +176,14 @@ public:
     return grid;
   }
 
+  auto getTopleft() -> sf::Vector2f {
+    return top_left;
+  }
+
+  auto clearGrid(int i, int j) -> void {
+    grid[i][j] = 0;
+  }
+
 protected:
   BaseSquare grid;
   const size_t BASE_SIZE;
@@ -238,6 +243,8 @@ public:
 auto generateRandomPiece(sf::Color color, sf::Vector2f top_left) -> Piece {
   std::random_device rng;
   std::uniform_int_distribution<size_t> choice_distribution(0, 7);
+
+  return IShape(color, top_left);
 
   int choice = choice_distribution(rng);
     switch (choice) {
