@@ -65,8 +65,8 @@ public:
 
     pieces[control_index].moveDown();
     if (!validMove()) {
-      clearLines();
       pieces[control_index].moveUp();
+      clearLines();
       spawnRandomPiece();
       if (!validMove()) {
         has_ended = true;
