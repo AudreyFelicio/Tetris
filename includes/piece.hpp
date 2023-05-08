@@ -244,8 +244,6 @@ auto generateRandomPiece(sf::Color color, sf::Vector2f top_left) -> Piece {
   std::random_device rng;
   std::uniform_int_distribution<size_t> choice_distribution(0, 7);
 
-  return IShape(color, top_left);
-
   int choice = choice_distribution(rng);
     switch (choice) {
       case 0:

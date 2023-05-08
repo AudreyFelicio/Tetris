@@ -68,10 +68,7 @@ public:
     if (!validMove()) {
       pieces[control_index].moveUp();
       spawnRandomPiece();
-
-      pieces[control_index].moveDown();
       if (!validMove()) {
-        pieces[control_index].moveUp();
         has_ended = true;
       }
     }
