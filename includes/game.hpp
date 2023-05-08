@@ -18,7 +18,7 @@
 
 class Game {
 public:
-  Game() {
+  Game(): board{Board::createNewBoard(BOARD_POSITION)} {
     initFont();
     initTitle();
     initScore();
@@ -48,23 +48,24 @@ public:
   }
 
   auto handleKeyboardInput(sf::Keyboard::Key input) -> void {
-    if (input == sf::Keyboard::Space) {
+    if (input == sf::Keyboard::Escape) {
       is_paused = !is_paused;
+    } else if (input == sf::Keyboard::Space) {
+      board.next();
     }
 
     board.handleKeyboardInput(input);
   }
 
-protected:
+private:
   sf::Font font;
   sf::Text title;
   sf::Text score;
   sf::Text level;
-
   bool is_paused = false;
   int current_score = 0;
   int current_level = 1;
-  Board board = Board::createNewBoard(BOARD_POSITION);
+  Board board;
 
   auto initFont() -> void {
     font.loadFromFile("./resources/font/telelower.ttf");
