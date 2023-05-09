@@ -50,7 +50,7 @@ public:
   }
 
   auto draw(sf::RenderWindow& window) const -> void {
-    window.draw(background);
+    // window.draw(background); // only render to reposition bacground
     for (auto &piece: pieces) {
       piece.draw(window);
     }

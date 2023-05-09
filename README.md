@@ -1,4 +1,19 @@
-# CMake SFML Project Template
+# Gameplay
+
+![gameplay_screenshoot](./resources/screenshots/gameplay.jpg)
+
+## Control
+1. Arrows
+    - Right - shift right
+    - Left - shift left
+    - Up - rotate clockwise
+    - Down - rotate counter-clockwise
+2. Esc - pause
+3. Spacebar - speed up 
+
+# Developer Guide 
+
+Disclaimer: []
 
 This repository template should allow for a fast and hassle-free kick start of your next SFML project using CMake.
 Thanks to [GitHub's nature of templates](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template), you can fork this repository without inheriting its Git history.
