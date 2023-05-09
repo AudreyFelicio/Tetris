@@ -143,15 +143,15 @@ public:
     return top_left.y + bottomMost * UNIT_SQUARE_LENGTH;
   }
 
-  auto getPoints() -> std::set<std::pair<int, int> > {
-    std::set<std::pair<int, int> > points;
+  auto getPoints() -> std::set<std::pair<int, int>> {
+    std::set<std::pair<int, int>> points;
     int i_offset = round(top_left.y / UNIT_SQUARE_LENGTH);
     int j_offset = round(top_left.x / UNIT_SQUARE_LENGTH);
 
     for (int i = 0; i < BASE_SIZE; ++i) {
       for (int j = 0; j < BASE_SIZE; ++j) {
         if (grid[i][j]) {
-          points.insert(std::make_pair(i + i_offset, j + j_offset));
+          points.insert(std::make_pair(i, j));
         }
       }
     }
@@ -184,18 +184,19 @@ public:
     grid[i][j] = 0;
   }
 
+  auto getColor() -> sf::Color {
+    return color;
+  }
+
 protected:
   BaseSquare grid;
-  const size_t BASE_SIZE;
+  size_t BASE_SIZE;
   sf::Color color;
   sf::Vector2f top_left;
   PieceType type;
-  std::chrono::high_resolution_clock::time_point last_keyboard_input;
 
   Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type, size_t base_size):
-    grid{grid}, color{color}, top_left{top_left}, type{type}, BASE_SIZE{base_size} {
-      last_keyboard_input = std::chrono::high_resolution_clock::now();
-    }
+    grid{grid}, color{color}, top_left{top_left}, type{type}, BASE_SIZE{base_size} {}
 };
 
 class OShape : public Piece {

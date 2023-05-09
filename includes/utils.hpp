@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <SFML/Graphics.hpp>
+#include <string>
 
 auto createColorFromString(const std::string& hexString) -> sf::Color {
   // remove '#' character from the beginning of the string, if it exists
