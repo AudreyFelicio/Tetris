@@ -149,29 +149,21 @@ private:
   }
 
   auto updateGrid() -> void {
-    BaseBoard new_grid = grid;
-    BaseColor new_colors = colors;
     for (auto row = 0; row < BOARD_HEIGHT; ++row) {
       for (auto col = 0; col < BOARD_WIDTH; ++col) {
-        if (new_grid[row][col] == SquareState::ACTIVE) {
-          new_grid[row][col] = SquareState::EMPTY;
+        if (grid[row][col] == SquareState::ACTIVE) {
+          grid[row][col] = SquareState::EMPTY;
         }
       }
     }
 
     const auto piece_top_left = active.getTopleft();
-    const auto piece_grid = active.getGrid();
+    const auto points = active.getPoints();
     const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
-    for (auto i = 0; i < piece_grid.size(); ++i) {
-      for (auto j = 0; j < piece_grid[0].size(); ++j) {
-        if (piece_grid[i][j]) {
-          new_grid[gridY + i][gridX + j] = SquareState::ACTIVE;
-          new_colors[gridY + i][gridX + j] = active.getColor();
-        }
-      }
+    for (const auto [y, x] : points) {
+      grid[gridY + y][gridX + x] = SquareState::ACTIVE;
+      colors[gridY + y][gridX + x] = active.getColor();
     }
-    std::swap(new_grid, grid);
-    std::swap(new_colors, colors);
   }
 
   auto clearLines() -> void {
