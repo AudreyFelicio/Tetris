@@ -1,5 +1,4 @@
 # Gameplay
-
 ![gameplay_screenshoot](./resources/screenshots/gameplay.jpg)
 
 ## Control
