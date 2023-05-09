@@ -1,5 +1,5 @@
 # Gameplay
-![gameplay_screenshoot](./resources/Screenshots/gameplay.jpg)
+![gameplay_screenshoot](./resources/image/Screenshots/gameplay.jpg)
 
 ## Control
 1. Arrows
