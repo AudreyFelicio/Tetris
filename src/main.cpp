@@ -8,18 +8,6 @@
 #include "game.hpp"
 #include "utils.hpp"
 
-auto initBlocks(sf::Sprite *block, std::string path) -> void {
-  sf::Texture texture;
-  if (!texture.loadFromFile(path)) {
-    printf("Error in loading texture.\n");
-  }
-  texture.setSmooth(true);
-
-  (*block).setTexture(texture);
-  (*block).setPosition(10, 10);
-  (*block).setScale(0.5f, 0.5f);
-}
-
 auto main() -> int {
   Game game;
 
