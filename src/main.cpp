@@ -28,17 +28,17 @@ auto main() -> int {
   sf::Time total_elapsed = sf::milliseconds(0);
   while (window.isOpen()) {
     total_elapsed += clock.restart();
-    if (total_elapsed >= sf::milliseconds(500)) {
-      game.next();
-      total_elapsed = sf::milliseconds(0);
-    }
 
     for (auto event = sf::Event{}; window.pollEvent(event); ) {
       if (event.type == sf::Event::Closed) {
         window.close();
-      }  else if (event.type == sf::Event::KeyPressed) {
+      } else if (event.type == sf::Event::KeyPressed) {
         game.handleKeyboardInput(event.key.code);
       }
+    }
+    if (total_elapsed >= sf::milliseconds(500)) {
+      game.next();
+      total_elapsed = sf::milliseconds(0);
     }
     window.clear();
     window.draw(background); 

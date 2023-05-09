@@ -62,9 +62,10 @@ public:
       active.moveUp();
       fixActivePiece();
       clearLines();
-      if (!validMove()) {
-        has_ended = true;
-      }
+      active = spawnRandomPiece();
+    }
+    if (!validMove()) {
+      has_ended = true;
     }
     updateGrid();
   }
@@ -206,7 +207,6 @@ private:
         }
       }
     }
-    active = spawnRandomPiece();
   }
 };
 
