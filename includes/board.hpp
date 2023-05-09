@@ -14,94 +14,91 @@
 #include "piece.hpp"
 #include "constants.hpp"
 
+enum class SquareState {
+  ACTIVE,
+  PASSIVE,
+  EMPTY
+};
+
 class Board {
-using BaseBoard = std::array<std::array<int, BOARD_WIDTH>, BOARD_HEIGHT>;
+using BaseBoard = std::array<std::array<SquareState, BOARD_WIDTH>, BOARD_HEIGHT>;
+using BaseTexture = std::array<std::array<int, BOARD_WIDTH>, BOARD_HEIGHT>;
 
 public:
   static auto createNewBoard(sf::Vector2f pos) -> Board {
     BaseBoard newGrid;
+    BaseTexture newTextures;
     for (auto i = 0; i < BOARD_HEIGHT; ++i) {
-      std::fill(newGrid[i].begin(), newGrid[i].end(), -1);
+      std::fill(newGrid[i].begin(), newGrid[i].end(), SquareState::EMPTY);
+      std::fill(newTextures[i].begin(), newTextures[i].end(), -1);
     }
-    Board board(newGrid, sf::Color::White, pos);
+    Board board(newGrid, newTextures, sf::Color::White, pos);
     return board;
   }
 
-  Board(BaseBoard grid, sf::Color color, sf::Vector2f top_left):
-    grid{grid}, color{color}, top_left{top_left}, control_index{0} {
+  Board(BaseBoard grid, BaseTexture textures, sf::Color color, sf::Vector2f top_left):
+    grid{grid}, textures{textures}, color{color}, top_left{top_left}, active{spawnRandomPiece()}, next_active{spawnRandomPiece()} {
       background = createBackground();
-      spawnRandomPiece();
+      updateGrid();
     }
-
-  auto spawnRandomPiece() -> void {
-    std::random_device rng;
-
-    std::uniform_int_distribution<size_t> color_distribution(0, 255);
-    sf::Color random_color(color_distribution(rng), color_distribution(rng), color_distribution(rng));
-
-    std::uniform_int_distribution<size_t> dist(0, BOARD_WIDTH - LARGE_SIZE);
-    sf::Vector2f random_position(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y);
-
-    Piece random_piece = generateRandomPiece(random_color, random_position);
-    
-    pieces.push_back(random_piece);
-    control_index = pieces.size() - 1;
-    updatePieceInGrid(pieces.back(), control_index);
-  }
 
   auto draw(sf::RenderWindow& window) const -> void {
-    // window.draw(background); // only render to reposition bacground
-    for (auto &piece: pieces) {
-      piece.draw(window);
+    const auto points = next_active.getPoints();
+    for (const auto [y, x] : points) {
+      sf::Sprite curr_block = blocks[next_active.getBlockType()];
+      curr_block.setPosition(sf::Vector2f(NEXT_BLOCK_X + UNIT_SQUARE_LENGTH * x, NEXT_BLOCK_Y + UNIT_SQUARE_LENGTH * y));
+      window.draw(curr_block);
     }
-  }
-
-  auto next() -> void {
-    if (control_index < 0 or control_index >= pieces.size()) {
-      return;
-    }
-
-    updateGrid();
-
-    pieces[control_index].moveDown();
-    if (!validMove()) {
-      pieces[control_index].moveUp();
-      clearLines();
-      spawnRandomPiece();
-      if (!validMove()) {
-        has_ended = true;
+    for (auto row = 0; row < BOARD_HEIGHT; row++) {
+      for (auto col = 0; col < BOARD_WIDTH; col++) {
+        if (grid[row][col] != SquareState::EMPTY) {
+          sf::Sprite curr_block = blocks[textures[row][col]];
+          curr_block.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
+          window.draw(curr_block);
+        }
       }
     }
   }
 
-  auto handleKeyboardInput(sf::Keyboard::Key input) -> void {
-    if (control_index < 0 or control_index >= pieces.size()) {
-      return;
+  auto next() -> void {
+    active.moveDown();
+    if (!validMove()) {
+      active.moveUp();
+      fixActivePiece();
+      clearLines();
+      active = next_active;
+      next_active = spawnRandomPiece();
     }
+    if (!validMove()) {
+      has_ended = true;
+    }
+    updateGrid();
+  }
 
+  auto handleKeyboardInput(sf::Keyboard::Key input) -> void {
     switch (input) {
       case sf::Keyboard::Left:
-        pieces[control_index].moveLeft();
+        active.moveLeft();
         if (!validMove()) {
-          pieces[control_index].moveRight();
+          active.moveRight();
         }
         break;
       case sf::Keyboard::Right:
-        pieces[control_index].moveRight();
+        active.moveRight();
         if (!validMove()) {
-          pieces[control_index].moveLeft();
+          active.moveLeft();
         }
         break;
       case sf::Keyboard::Up:
-        pieces[control_index].rotateClockwise();
+        active.rotateClockwise();
         if (!validMove()) {
-          pieces[control_index].rotateCounterclockwise();
+          active.rotateCounterclockwise();
         }
         break;
       case sf::Keyboard::Down:
-        pieces[control_index].rotateCounterclockwise();
+        active.rotateCounterclockwise();
         if (!validMove()) {
-          pieces[control_index].rotateClockwise();
+          active.rotateClockwise();
         }
         break;
       default:
@@ -112,17 +109,17 @@ public:
   auto getHasEnded() -> bool {
     return has_ended;
   }
-  
 
 private:
   BaseBoard grid;
+  BaseTexture textures;
   sf::Color color;
   sf::Vector2f top_left;
-  std::vector<Piece> pieces;
   sf::RectangleShape background;
-  int control_index;
+  Piece active;
+  Piece next_active;
   bool has_ended = false;
-  
+
   auto createBackground() -> sf::RectangleShape {
     sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH * BOARD_WIDTH, UNIT_SQUARE_LENGTH * BOARD_HEIGHT));
     square.setPosition(top_left);
@@ -130,69 +127,90 @@ private:
     return square;
   }
 
-  auto validMove() -> bool {
-    if (control_index < 0 or control_index >= pieces.size()) {
-      return true;
-    }
+  auto spawnRandomPiece() -> Piece {
+    std::random_device rng;
 
-    if (pieces[control_index].outsideBoundaries(top_left.x, top_left.x + (BOARD_WIDTH * UNIT_SQUARE_LENGTH), top_left.y, top_left.y + (BOARD_HEIGHT * UNIT_SQUARE_LENGTH))) {
+    std::uniform_int_distribution<size_t> color_distribution(0, 255);
+    sf::Color random_color(color_distribution(rng), color_distribution(rng), color_distribution(rng));
+
+    std::uniform_int_distribution<size_t> dist(0, BOARD_WIDTH - LARGE_SIZE);
+    sf::Vector2f random_position(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y);
+
+    return generateRandomPiece(random_color, random_position);
+  }
+
+  auto validMove() -> bool {
+    if (active.outsideBoundaries(top_left.x, top_left.x + (BOARD_WIDTH * UNIT_SQUARE_LENGTH), top_left.y, top_left.y + (BOARD_HEIGHT * UNIT_SQUARE_LENGTH))) {
       return false;
     }
 
-    for (int i = 0; i < pieces.size(); ++i) {
-      if (i == control_index) {
-        continue;
-      }
-
-      if (pieces[control_index].collidesWithOtherPiece(pieces[i])) {
+    const auto piece_top_left = active.getTopleft();
+    const auto points = active.getPoints();
+    const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
+    for (const auto [y, x] : points) {
+      if (grid[gridY + y][gridX + x] == SquareState::PASSIVE) {
         return false;
       }
     }
-
     return true;
   }
 
   auto updateGrid() -> void {
-    BaseBoard newGrid;
-    for (auto i = 0; i < BOARD_HEIGHT; ++i) {
-      std::fill(newGrid[i].begin(), newGrid[i].end(), -1);
-    }
-    grid = newGrid;
-
-    for (auto i = 0; i < pieces.size(); ++i) {
-      updatePieceInGrid(pieces[i], i);
-    }
-  }
-
-  auto updatePieceInGrid(Piece& piece, int index) -> void {
-    const auto piece_top_left = piece.getTopleft();
-    const auto piece_grid = piece.getGrid();
-    const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
-    for (auto i = 0; i < piece_grid.size(); ++i) {
-      for (auto j = 0; j < piece_grid[0].size(); ++j) {
-        if (piece_grid[i][j]) {
-          grid[gridY + i][gridX + j] = index;
+    for (auto row = 0; row < BOARD_HEIGHT; ++row) {
+      for (auto col = 0; col < BOARD_WIDTH; ++col) {
+        if (grid[row][col] == SquareState::ACTIVE) {
+          grid[row][col] = SquareState::EMPTY;
         }
       }
+    }
+
+    const auto piece_top_left = active.getTopleft();
+    const auto points = active.getPoints();
+    const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
+    for (const auto [y, x] : points) {
+      grid[gridY + y][gridX + x] = SquareState::ACTIVE;
+      textures[gridY + y][gridX + x] = active.getBlockType();
     }
   }
 
   auto clearLines() -> void {
     for (auto i = 0; i < BOARD_HEIGHT; ++i) {
-      size_t count_non_zero = 0;
+      size_t count_non_empty = 0;
       for (auto j = 0; j < BOARD_WIDTH; ++j) {
-        if (grid[i][j] >= 0) {
-          count_non_zero++;
+        if (grid[i][j] != SquareState::EMPTY) {
+          count_non_empty++;
         }
       }
-      if (count_non_zero < BOARD_WIDTH) {
+      if (count_non_empty < BOARD_WIDTH) {
         continue;
       }
       for (auto j = 0; j < BOARD_WIDTH; ++j) {
-        auto& curr_piece = pieces[grid[i][j]];
-        const auto piece_top_left = curr_piece.getTopleft();
-        const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
-        curr_piece.clearGrid(i - gridY, j - gridX);
+        grid[i][j] = SquareState::EMPTY;
+        textures[i][j] = -1;
+      }
+    }
+
+    for (auto i = BOARD_HEIGHT - 1; i > 0; --i) {
+      bool is_row_empty = true;
+      for (const auto state : grid[i]) {
+        if (state != SquareState::EMPTY) {
+          is_row_empty = false;
+          break;
+        }
+      }
+      if (is_row_empty) {
+        std::swap(grid[i], grid[i - 1]);
+        std::swap(textures[i], textures[i - 1]);
+      }
+    }
+  }
+
+  auto fixActivePiece() -> void {
+    for (auto row = 0; row < BOARD_HEIGHT; ++row) {
+      for (auto col = 0; col < BOARD_WIDTH; ++col) {
+        if (grid[row][col] == SquareState::ACTIVE) {
+          grid[row][col] = SquareState::PASSIVE;
+        }
       }
     }
   }

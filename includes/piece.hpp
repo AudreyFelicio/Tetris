@@ -29,23 +29,6 @@ class Piece {
 using BaseSquare = std::array<std::array<bool, LARGE_SIZE>, LARGE_SIZE>;
 
 public:
-  auto draw(sf::RenderWindow& window) const -> void {
-    for (auto row = 0; row < BASE_SIZE; row++) {
-      for (auto col = 0; col < BASE_SIZE; col++) {
-        if (grid[row][col]) {
-          sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH, UNIT_SQUARE_LENGTH));
-          square.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
-          square.setFillColor(color);
-          // window.draw(square);
-
-          sf::Sprite curr_block = blocks[block_type];
-          curr_block.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
-          window.draw(curr_block);
-        }
-      }
-    }
-  }
-
   auto moveRight() -> void {
     top_left.x += UNIT_SQUARE_LENGTH;
   }
@@ -148,15 +131,15 @@ public:
     return top_left.y + bottomMost * UNIT_SQUARE_LENGTH;
   }
 
-  auto getPoints() -> std::set<std::pair<int, int> > {
-    std::set<std::pair<int, int> > points;
+  auto getPoints() const -> std::set<std::pair<int, int>> {
+    std::set<std::pair<int, int>> points;
     int i_offset = round(top_left.y / UNIT_SQUARE_LENGTH);
     int j_offset = round(top_left.x / UNIT_SQUARE_LENGTH);
 
     for (int i = 0; i < BASE_SIZE; ++i) {
       for (int j = 0; j < BASE_SIZE; ++j) {
         if (grid[i][j]) {
-          points.insert(std::make_pair(i + i_offset, j + j_offset));
+          points.insert(std::make_pair(i, j));
         }
       }
     }
@@ -177,11 +160,11 @@ public:
     return getLeftBoundary() < left or getRightBoundary() > right or getBottomBoundary() > bottom;
   }
 
-  auto getGrid() -> BaseSquare {
+  auto getGrid() const -> BaseSquare {
     return grid;
   }
 
-  auto getTopleft() -> sf::Vector2f {
+  auto getTopleft() const -> sf::Vector2f {
     return top_left;
   }
 
@@ -189,20 +172,24 @@ public:
     grid[i][j] = 0;
   }
 
+  auto getColor() const -> sf::Color {
+    return color;
+  }
+
+  auto getBlockType() const -> int {
+    return block_type;
+  }
+
 protected:
   BaseSquare grid;
-  const size_t BASE_SIZE;
+  size_t BASE_SIZE;
   sf::Color color;
   int block_type;
   sf::Vector2f top_left;
   PieceType type;
-  std::chrono::high_resolution_clock::time_point last_keyboard_input;
 
   Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type, size_t base_size):
-    grid{grid}, color{color}, top_left{top_left}, type{type}, BASE_SIZE{base_size} {
-      last_keyboard_input = std::chrono::high_resolution_clock::now();
-      block_type = genRandomBlockType();
-    }
+    grid{grid}, color{color}, top_left{top_left}, type{type}, BASE_SIZE{base_size}, block_type{genRandomBlockType()} {}
 };
 
 class OShape : public Piece {

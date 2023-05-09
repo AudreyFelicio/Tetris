@@ -52,9 +52,9 @@ public:
       is_paused = !is_paused;
     } else if (input == sf::Keyboard::Space) {
       board.next();
+    } else {
+      board.handleKeyboardInput(input);
     }
-
-    board.handleKeyboardInput(input);
   }
 
 private:
