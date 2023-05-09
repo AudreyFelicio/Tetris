@@ -189,7 +189,7 @@ protected:
   PieceType type;
 
   Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type, size_t base_size):
-    grid{grid}, color{color}, top_left{top_left}, type{type}, BASE_SIZE{base_size} {}
+    grid{grid}, color{color}, top_left{top_left}, type{type}, BASE_SIZE{base_size}, block_type{genRandomBlockType()} {}
 };
 
 class OShape : public Piece {
