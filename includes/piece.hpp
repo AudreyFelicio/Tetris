@@ -13,6 +13,7 @@
 #include <tuple>
 #include <random>
 #include "constants.hpp"
+#include "utils.hpp"
 
 enum class PieceType {
   I_SHAPE,
@@ -35,7 +36,11 @@ public:
           sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH, UNIT_SQUARE_LENGTH));
           square.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
           square.setFillColor(color);
-          window.draw(square);
+          // window.draw(square);
+
+          sf::Sprite curr_block = blocks[block_type];
+          curr_block.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
+          window.draw(curr_block);
         }
       }
     }
@@ -192,6 +197,7 @@ protected:
   BaseSquare grid;
   size_t BASE_SIZE;
   sf::Color color;
+  int block_type;
   sf::Vector2f top_left;
   PieceType type;
 

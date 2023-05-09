@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <constants.hpp>
+#include <random>
 
 auto createColorFromString(const std::string& hexString) -> sf::Color {
   // remove '#' character from the beginning of the string, if it exists
@@ -24,5 +26,12 @@ auto createColorFromString(const std::string& hexString) -> sf::Color {
   // return the resulting color
   return sf::Color(red, green, blue, alpha);
 }
+
+auto genRandomBlockType() -> int {
+  std::random_device rd;
+  std::uniform_int_distribution<int> dist(0, NO_OF_BLOCK_TYPES - 1);
+  return dist(rd);
+}
+
 
 #endif
