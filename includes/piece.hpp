@@ -131,7 +131,7 @@ public:
     return top_left.y + bottomMost * UNIT_SQUARE_LENGTH;
   }
 
-  auto getPoints() -> std::set<std::pair<int, int>> {
+  auto getPoints() const -> std::set<std::pair<int, int>> {
     std::set<std::pair<int, int>> points;
     int i_offset = round(top_left.y / UNIT_SQUARE_LENGTH);
     int j_offset = round(top_left.x / UNIT_SQUARE_LENGTH);
@@ -160,11 +160,11 @@ public:
     return getLeftBoundary() < left or getRightBoundary() > right or getBottomBoundary() > bottom;
   }
 
-  auto getGrid() -> BaseSquare {
+  auto getGrid() const -> BaseSquare {
     return grid;
   }
 
-  auto getTopleft() -> sf::Vector2f {
+  auto getTopleft() const -> sf::Vector2f {
     return top_left;
   }
 
@@ -172,11 +172,11 @@ public:
     grid[i][j] = 0;
   }
 
-  auto getColor() -> sf::Color {
+  auto getColor() const -> sf::Color {
     return color;
   }
 
-  auto getBlockType() -> int {
+  auto getBlockType() const -> int {
     return block_type;
   }
 

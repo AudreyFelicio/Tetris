@@ -37,12 +37,18 @@ public:
   }
 
   Board(BaseBoard grid, BaseTexture textures, sf::Color color, sf::Vector2f top_left):
-    grid{grid}, textures{textures}, color{color}, top_left{top_left}, active{spawnRandomPiece()} {
+    grid{grid}, textures{textures}, color{color}, top_left{top_left}, active{spawnRandomPiece()}, next_active{spawnRandomPiece()} {
       background = createBackground();
       updateGrid();
     }
 
   auto draw(sf::RenderWindow& window) const -> void {
+    const auto points = next_active.getPoints();
+    for (const auto [y, x] : points) {
+      sf::Sprite curr_block = blocks[next_active.getBlockType()];
+      curr_block.setPosition(sf::Vector2f(NEXT_BLOCK_X + UNIT_SQUARE_LENGTH * x, NEXT_BLOCK_Y + UNIT_SQUARE_LENGTH * y));
+      window.draw(curr_block);
+    }
     for (auto row = 0; row < BOARD_HEIGHT; row++) {
       for (auto col = 0; col < BOARD_WIDTH; col++) {
         if (grid[row][col] != SquareState::EMPTY) {
@@ -60,7 +66,8 @@ public:
       active.moveUp();
       fixActivePiece();
       clearLines();
-      active = spawnRandomPiece();
+      active = next_active;
+      next_active = spawnRandomPiece();
     }
     if (!validMove()) {
       has_ended = true;
@@ -110,6 +117,7 @@ private:
   sf::Vector2f top_left;
   sf::RectangleShape background;
   Piece active;
+  Piece next_active;
   bool has_ended = false;
 
   auto createBackground() -> sf::RectangleShape {
