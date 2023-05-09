@@ -60,8 +60,8 @@ public:
     active.moveDown();
     if (!validMove()) {
       active.moveUp();
-      clearLines();
       fixActivePiece();
+      clearLines();
       if (!validMove()) {
         has_ended = true;
       }
@@ -178,11 +178,6 @@ private:
         continue;
       }
       for (auto j = 0; j < BOARD_WIDTH; ++j) {
-        if (grid[i][j] == SquareState::ACTIVE) {
-          const auto piece_top_left = active.getTopleft();
-          const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
-          active.clearGrid(i - gridY, j - gridX);
-        }
         grid[i][j] = SquareState::EMPTY;
         colors[i][j] = sf::Color::White;
       }
