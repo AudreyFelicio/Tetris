@@ -22,35 +22,33 @@ enum class SquareState {
 
 class Board {
 using BaseBoard = std::array<std::array<SquareState, BOARD_WIDTH>, BOARD_HEIGHT>;
-using BaseColor = std::array<std::array<sf::Color, BOARD_WIDTH>, BOARD_HEIGHT>;
+using BaseTexture = std::array<std::array<int, BOARD_WIDTH>, BOARD_HEIGHT>;
 
 public:
   static auto createNewBoard(sf::Vector2f pos) -> Board {
     BaseBoard newGrid;
-    BaseColor newColors;
+    BaseTexture newTextures;
     for (auto i = 0; i < BOARD_HEIGHT; ++i) {
       std::fill(newGrid[i].begin(), newGrid[i].end(), SquareState::EMPTY);
-      std::fill(newColors[i].begin(), newColors[i].end(), sf::Color::White);
+      std::fill(newTextures[i].begin(), newTextures[i].end(), -1);
     }
-    Board board(newGrid, newColors, sf::Color::White, pos);
+    Board board(newGrid, newTextures, sf::Color::White, pos);
     return board;
   }
 
-  Board(BaseBoard grid, BaseColor colors, sf::Color color, sf::Vector2f top_left):
-    grid{grid}, colors{colors}, color{color}, top_left{top_left}, active{spawnRandomPiece()} {
+  Board(BaseBoard grid, BaseTexture textures, sf::Color color, sf::Vector2f top_left):
+    grid{grid}, textures{textures}, color{color}, top_left{top_left}, active{spawnRandomPiece()} {
       background = createBackground();
       updateGrid();
     }
 
   auto draw(sf::RenderWindow& window) const -> void {
-    window.draw(background);
     for (auto row = 0; row < BOARD_HEIGHT; row++) {
       for (auto col = 0; col < BOARD_WIDTH; col++) {
         if (grid[row][col] != SquareState::EMPTY) {
-          sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH, UNIT_SQUARE_LENGTH));
-          square.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
-          square.setFillColor(colors[row][col]);
-          window.draw(square);
+          sf::Sprite curr_block = blocks[textures[row][col]];
+          curr_block.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
+          window.draw(curr_block);
         }
       }
     }
@@ -107,7 +105,7 @@ public:
 
 private:
   BaseBoard grid;
-  BaseColor colors;
+  BaseTexture textures;
   sf::Color color;
   sf::Vector2f top_left;
   sf::RectangleShape background;
@@ -163,7 +161,7 @@ private:
     const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
     for (const auto [y, x] : points) {
       grid[gridY + y][gridX + x] = SquareState::ACTIVE;
-      colors[gridY + y][gridX + x] = active.getColor();
+      textures[gridY + y][gridX + x] = active.getBlockType();
     }
   }
 
@@ -180,7 +178,7 @@ private:
       }
       for (auto j = 0; j < BOARD_WIDTH; ++j) {
         grid[i][j] = SquareState::EMPTY;
-        colors[i][j] = sf::Color::White;
+        textures[i][j] = -1;
       }
     }
 
@@ -194,7 +192,7 @@ private:
       }
       if (is_row_empty) {
         std::swap(grid[i], grid[i - 1]);
-        std::swap(colors[i], colors[i - 1]);
+        std::swap(textures[i], textures[i - 1]);
       }
     }
   }

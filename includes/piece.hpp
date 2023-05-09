@@ -29,23 +29,6 @@ class Piece {
 using BaseSquare = std::array<std::array<bool, LARGE_SIZE>, LARGE_SIZE>;
 
 public:
-  auto draw(sf::RenderWindow& window) const -> void {
-    for (auto row = 0; row < BASE_SIZE; row++) {
-      for (auto col = 0; col < BASE_SIZE; col++) {
-        if (grid[row][col]) {
-          sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH, UNIT_SQUARE_LENGTH));
-          square.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
-          square.setFillColor(color);
-          // window.draw(square);
-
-          sf::Sprite curr_block = blocks[block_type];
-          curr_block.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
-          window.draw(curr_block);
-        }
-      }
-    }
-  }
-
   auto moveRight() -> void {
     top_left.x += UNIT_SQUARE_LENGTH;
   }
@@ -191,6 +174,10 @@ public:
 
   auto getColor() -> sf::Color {
     return color;
+  }
+
+  auto getBlockType() -> int {
+    return block_type;
   }
 
 protected:
