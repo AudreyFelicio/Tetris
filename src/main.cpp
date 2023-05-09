@@ -28,6 +28,7 @@ auto main() -> int {
   sf::Time total_elapsed = sf::milliseconds(0);
   while (window.isOpen()) {
     total_elapsed += clock.restart();
+    bool no_event = true;
 
     for (auto event = sf::Event{}; window.pollEvent(event); ) {
       if (event.type == sf::Event::Closed) {
@@ -35,8 +36,9 @@ auto main() -> int {
       } else if (event.type == sf::Event::KeyPressed) {
         game.handleKeyboardInput(event.key.code);
       }
+      no_event = false;
     }
-    if (total_elapsed >= sf::milliseconds(500)) {
+    if (total_elapsed >= sf::milliseconds(500) && no_event) {
       game.next();
       total_elapsed = sf::milliseconds(0);
     }
