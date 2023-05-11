@@ -23,50 +23,48 @@ public:
     for (auto i = 0; i < BOARD_HEIGHT; ++i) {
       std::fill(newGrid[i].begin(), newGrid[i].end(), -1);
     }
-    Board board(newGrid, sf::Color::White, pos);
+    Piece piece = generateRandomPiece(pos);
+    Piece next_piece = generateRandomPiece(pos); 
+    Board board(newGrid, sf::Color::White, pos, piece, next_piece);
     return board;
   }
 
-  Board(BaseBoard grid, sf::Color color, sf::Vector2f top_left):
-    grid{grid}, color{color}, top_left{top_left}, control_index{0} {
+  Board(BaseBoard grid, sf::Color color, sf::Vector2f top_left, Piece piece, Piece next_piece):
+    grid{grid}, color{color}, top_left{top_left}, piece{piece}, next_piece{next_piece} {
       background = createBackground();
-      spawnRandomPiece();
     }
 
   auto spawnRandomPiece() -> void {
-    std::random_device rng;
-
-    std::uniform_int_distribution<size_t> color_distribution(0, 255);
-    sf::Color random_color(color_distribution(rng), color_distribution(rng), color_distribution(rng));
-
-    std::uniform_int_distribution<size_t> dist(0, BOARD_WIDTH - LARGE_SIZE);
-    sf::Vector2f random_position(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y);
-
-    Piece random_piece = generateRandomPiece(random_color, random_position);
-    
-    pieces.push_back(random_piece);
-    control_index = pieces.size() - 1;
-    updatePieceInGrid(pieces.back(), control_index);
+    updatePieceInGrid(piece);
+    piece = next_piece;
+    next_piece = generateRandomPiece(top_left);
   }
 
   auto draw(sf::RenderWindow& window) const -> void {
     // window.draw(background); // only render to reposition bacground
-    for (auto &piece: pieces) {
-      piece.draw(window);
+    // for (auto &piece: pieces) {
+    //   piece.draw(window);
+    // }
+    piece.draw(window);
+
+    for (auto i = 0; i < BOARD_HEIGHT; ++i) {
+      for (auto j = 0; j < BOARD_WIDTH; ++j) {
+        if (grid[i][j] != -1) {
+          sf::Sprite sprite = blocks[grid[i][j]];
+          sprite.setPosition(top_left.x + j * UNIT_SQUARE_LENGTH, top_left.y + i * UNIT_SQUARE_LENGTH);
+          window.draw(sprite);
+        }
+      }
     }
   }
 
   auto next() -> void {
-    if (control_index < 0 or control_index >= pieces.size()) {
-      return;
-    }
+    // updateGrid();
 
-    updateGrid();
-
-    pieces[control_index].moveDown();
+    piece.moveDown();
     if (!validMove()) {
-      pieces[control_index].moveUp();
-      clearLines();
+      piece.moveUp();
+      // clearLines();
       spawnRandomPiece();
       if (!validMove()) {
         has_ended = true;
@@ -75,33 +73,29 @@ public:
   }
 
   auto handleKeyboardInput(sf::Keyboard::Key input) -> void {
-    if (control_index < 0 or control_index >= pieces.size()) {
-      return;
-    }
-
     switch (input) {
       case sf::Keyboard::Left:
-        pieces[control_index].moveLeft();
+        piece.moveLeft();
         if (!validMove()) {
-          pieces[control_index].moveRight();
+          piece.moveRight();
         }
         break;
       case sf::Keyboard::Right:
-        pieces[control_index].moveRight();
+        piece.moveRight();
         if (!validMove()) {
-          pieces[control_index].moveLeft();
+          piece.moveLeft();
         }
         break;
       case sf::Keyboard::Up:
-        pieces[control_index].rotateClockwise();
+        piece.rotateClockwise();
         if (!validMove()) {
-          pieces[control_index].rotateCounterclockwise();
+          piece.rotateCounterclockwise();
         }
         break;
       case sf::Keyboard::Down:
-        pieces[control_index].rotateCounterclockwise();
+        piece.rotateCounterclockwise();
         if (!validMove()) {
-          pieces[control_index].rotateClockwise();
+          piece.rotateClockwise();
         }
         break;
       default:
@@ -118,9 +112,9 @@ private:
   BaseBoard grid;
   sf::Color color;
   sf::Vector2f top_left;
-  std::vector<Piece> pieces;
+  Piece piece; 
+  Piece next_piece;
   sf::RectangleShape background;
-  int control_index;
   bool has_ended = false;
   
   auto createBackground() -> sf::RectangleShape {
@@ -131,23 +125,19 @@ private:
   }
 
   auto validMove() -> bool {
-    if (control_index < 0 or control_index >= pieces.size()) {
-      return true;
-    }
-
-    if (pieces[control_index].outsideBoundaries(top_left.x, top_left.x + (BOARD_WIDTH * UNIT_SQUARE_LENGTH), top_left.y, top_left.y + (BOARD_HEIGHT * UNIT_SQUARE_LENGTH))) {
+    if (piece.outsideBoundaries(top_left.x, top_left.x + (BOARD_WIDTH * UNIT_SQUARE_LENGTH), top_left.y, top_left.y + (BOARD_HEIGHT * UNIT_SQUARE_LENGTH))) {
       return false;
     }
 
-    for (int i = 0; i < pieces.size(); ++i) {
-      if (i == control_index) {
-        continue;
-      }
+    // for (int i = 0; i < pieces.size(); ++i) {
+    //   if (i == control_index) {
+    //     continue;
+    //   }
 
-      if (pieces[control_index].collidesWithOtherPiece(pieces[i])) {
-        return false;
-      }
-    }
+    //   if (piece.collidesWithOtherPiece(pieces[i])) {
+    //     return false;
+    //   }
+    // }
 
     return true;
   }
@@ -158,44 +148,40 @@ private:
       std::fill(newGrid[i].begin(), newGrid[i].end(), -1);
     }
     grid = newGrid;
-
-    for (auto i = 0; i < pieces.size(); ++i) {
-      updatePieceInGrid(pieces[i], i);
-    }
   }
 
-  auto updatePieceInGrid(Piece& piece, int index) -> void {
+  auto updatePieceInGrid(Piece& piecex) -> void {
     const auto piece_top_left = piece.getTopleft();
     const auto piece_grid = piece.getGrid();
     const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
     for (auto i = 0; i < piece_grid.size(); ++i) {
       for (auto j = 0; j < piece_grid[0].size(); ++j) {
         if (piece_grid[i][j]) {
-          grid[gridY + i][gridX + j] = index;
+          grid[gridY + i][gridX + j] = piece.getType();
         }
       }
     }
   }
 
-  auto clearLines() -> void {
-    for (auto i = 0; i < BOARD_HEIGHT; ++i) {
-      size_t count_non_zero = 0;
-      for (auto j = 0; j < BOARD_WIDTH; ++j) {
-        if (grid[i][j] >= 0) {
-          count_non_zero++;
-        }
-      }
-      if (count_non_zero < BOARD_WIDTH) {
-        continue;
-      }
-      for (auto j = 0; j < BOARD_WIDTH; ++j) {
-        auto& curr_piece = pieces[grid[i][j]];
-        const auto piece_top_left = curr_piece.getTopleft();
-        const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
-        curr_piece.clearGrid(i - gridY, j - gridX);
-      }
-    }
-  }
+  // auto clearLines() -> void {
+  //   for (auto i = 0; i < BOARD_HEIGHT; ++i) {
+  //     size_t count_non_zero = 0;
+  //     for (auto j = 0; j < BOARD_WIDTH; ++j) {
+  //       if (grid[i][j] >= 0) {
+  //         count_non_zero++;
+  //       }
+  //     }
+  //     if (count_non_zero < BOARD_WIDTH) {
+  //       continue;
+  //     }
+  //     for (auto j = 0; j < BOARD_WIDTH; ++j) {
+  //       auto& curr_piece = pieces[grid[i][j]];
+  //       const auto piece_top_left = curr_piece.getTopleft();
+  //       const auto [gridX, gridY] = std::make_pair((piece_top_left.x - top_left.x) / UNIT_SQUARE_LENGTH, (piece_top_left.y - top_left.y) / UNIT_SQUARE_LENGTH);
+  //       curr_piece.clearGrid(i - gridY, j - gridX);
+  //     }
+  //   }
+  // }
 };
 
 #endif

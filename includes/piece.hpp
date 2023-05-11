@@ -29,15 +29,16 @@ class Piece {
 using BaseSquare = std::array<std::array<bool, LARGE_SIZE>, LARGE_SIZE>;
 
 public:
+  Piece(BaseSquare grid, sf::Vector2f top_left, PieceType type, size_t base_size):
+    grid{grid}, top_left{top_left}, type{type}, BASE_SIZE{base_size} {
+      block_type = genRandomBlockType();
+    }
+
+
   auto draw(sf::RenderWindow& window) const -> void {
     for (auto row = 0; row < BASE_SIZE; row++) {
       for (auto col = 0; col < BASE_SIZE; col++) {
         if (grid[row][col]) {
-          sf::RectangleShape square(sf::Vector2f(UNIT_SQUARE_LENGTH, UNIT_SQUARE_LENGTH));
-          square.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
-          square.setFillColor(color);
-          // window.draw(square);
-
           sf::Sprite curr_block = blocks[block_type];
           curr_block.setPosition(sf::Vector2f(top_left.x + UNIT_SQUARE_LENGTH * col, top_left.y + UNIT_SQUARE_LENGTH * row));
           window.draw(curr_block);
@@ -189,84 +190,89 @@ public:
     grid[i][j] = 0;
   }
 
+  auto getType() -> int {
+    return block_type;
+  }
+
+  Piece& operator=(const Piece& other) {
+    return *this;
+  }
+
 protected:
   BaseSquare grid;
   const size_t BASE_SIZE;
-  sf::Color color;
   int block_type;
   sf::Vector2f top_left;
   PieceType type;
-  std::chrono::high_resolution_clock::time_point last_keyboard_input;
-
-  Piece(BaseSquare grid, sf::Color color, sf::Vector2f top_left, PieceType type, size_t base_size):
-    grid{grid}, color{color}, top_left{top_left}, type{type}, BASE_SIZE{base_size} {
-      last_keyboard_input = std::chrono::high_resolution_clock::now();
-      block_type = genRandomBlockType();
-    }
+  int i;
+  int j;
 };
 
 class OShape : public Piece {
 public:
-  OShape(sf::Color color, sf::Vector2f top_left):
-    Piece{{{ {1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, color, top_left, PieceType::O_SHAPE, SMALL_SIZE} {}
+  OShape(sf::Vector2f top_left):
+    Piece{{{ {1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, top_left, PieceType::O_SHAPE, SMALL_SIZE} {}
 };
 
 class LShape : public Piece {
 public:
-  LShape(sf::Color color, sf::Vector2f top_left):
-    Piece{{{ {0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0} }}, color, top_left, PieceType::L_SHAPE, MEDIUM_SIZE} {}
+  LShape(sf::Vector2f top_left):
+    Piece{{{ {0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0} }}, top_left, PieceType::L_SHAPE, MEDIUM_SIZE} {}
 };
 
 class IShape : public Piece {
 public:
-  IShape(sf::Color color, sf::Vector2f top_left):
-    Piece{{{ {0, 0, 0, 0}, {1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, color, top_left, PieceType::I_SHAPE, LARGE_SIZE} {}
+  IShape(sf::Vector2f top_left):
+    Piece{{{ {0, 0, 0, 0}, {1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, top_left, PieceType::I_SHAPE, LARGE_SIZE} {}
 };
 
 class JShape : public Piece {
 public:
-  JShape(sf::Color color, sf::Vector2f top_left):
-    Piece{{{ {0, 1, 0, 0}, {0, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0} }}, color, top_left, PieceType::J_SHAPE, MEDIUM_SIZE} {}
+  JShape(sf::Vector2f top_left):
+    Piece{{{ {0, 1, 0, 0}, {0, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0} }}, top_left, PieceType::J_SHAPE, MEDIUM_SIZE} {}
 };
 
 class ZShape : public Piece {
 public:
-  ZShape(sf::Color color, sf::Vector2f top_left):
-    Piece{{{ {1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, color, top_left, PieceType::Z_SHAPE, MEDIUM_SIZE} {}
+  ZShape(sf::Vector2f top_left):
+    Piece{{{ {1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, top_left, PieceType::Z_SHAPE, MEDIUM_SIZE} {}
 };
 
 class TShape : public Piece {
 public:
-  TShape(sf::Color color, sf::Vector2f top_left):
-    Piece{{{ {0, 1, 0, 0}, {1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, color, top_left, PieceType::T_SHAPE, MEDIUM_SIZE} {}
+  TShape(sf::Vector2f top_left):
+    Piece{{{ {0, 1, 0, 0}, {1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, top_left, PieceType::T_SHAPE, MEDIUM_SIZE} {}
 };
 
 class SShape : public Piece {
 public:
-  SShape(sf::Color color, sf::Vector2f top_left):
-    Piece{{{ {0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, color, top_left, PieceType::S_SHAPE, MEDIUM_SIZE} {}
+  SShape(sf::Vector2f top_left):
+    Piece{{{ {0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }}, top_left, PieceType::S_SHAPE, MEDIUM_SIZE} {}
 };
 
-auto generateRandomPiece(sf::Color color, sf::Vector2f top_left) -> Piece {
+auto generateRandomPiece(sf::Vector2f top_left) -> Piece {
   std::random_device rng;
   std::uniform_int_distribution<size_t> choice_distribution(0, 7);
+
+  std::uniform_int_distribution<size_t> dist(0, BOARD_WIDTH - LARGE_SIZE);
+  sf::Vector2f random_position(top_left.x + dist(rng) * UNIT_SQUARE_LENGTH, top_left.y);
 
   int choice = choice_distribution(rng);
     switch (choice) {
       case 0:
-        return OShape(color, top_left);
+        return OShape(random_position);
       case 1:
-        return LShape(color, top_left);
+        return LShape(random_position);
       case 2:
-        return IShape(color, top_left);
+        return IShape(random_position);
       case 3:
-        return JShape(color, top_left);
+        return JShape(random_position);
       case 4:    
-        return ZShape(color, top_left);
+        return ZShape(random_position);
       case 5:
-        return TShape(color, top_left);
+        return TShape(random_position);
       default:
-        return SShape(color, top_left);
+        return SShape(random_position);
     }
 }
 
