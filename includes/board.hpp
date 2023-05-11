@@ -11,6 +11,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <vector>
 #include "piece.hpp"
 #include "constants.hpp"
 
@@ -174,6 +175,7 @@ private:
   }
 
   auto clearLines() -> void {
+    std::vector<bool> is_empty_row(BOARD_HEIGHT, false);
     for (auto i = 0; i < BOARD_HEIGHT; ++i) {
       size_t count_non_empty = 0;
       for (auto j = 0; j < BOARD_WIDTH; ++j) {
@@ -184,23 +186,21 @@ private:
       if (count_non_empty < BOARD_WIDTH) {
         continue;
       }
+      is_empty_row[i] = true;
       for (auto j = 0; j < BOARD_WIDTH; ++j) {
         grid[i][j] = SquareState::EMPTY;
         textures[i][j] = -1;
       }
     }
 
+    int earliest_empty_row = -1;
     for (auto i = BOARD_HEIGHT - 1; i > 0; --i) {
-      bool is_row_empty = true;
-      for (const auto state : grid[i]) {
-        if (state != SquareState::EMPTY) {
-          is_row_empty = false;
-          break;
-        }
-      }
-      if (is_row_empty) {
-        std::swap(grid[i], grid[i - 1]);
-        std::swap(textures[i], textures[i - 1]);
+      if (is_empty_row[i] && earliest_empty_row < 0) {
+        earliest_empty_row = i;
+      } else if (!is_empty_row[i] && earliest_empty_row >= 0) {
+        std::swap(grid[i], grid[earliest_empty_row]);
+        std::swap(textures[i], textures[earliest_empty_row]);
+        earliest_empty_row--;
       }
     }
   }
