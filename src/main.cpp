@@ -96,9 +96,8 @@ auto main() -> int {
       game.next();
       total_elapsed = sf::milliseconds(0);
     }
-    window.clear();
+
     window.draw(background); 
-    // window.draw(blocks[0]);
     game.draw(window);
     window.display();
   }

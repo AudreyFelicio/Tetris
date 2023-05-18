@@ -21,12 +21,16 @@ enable_testing()
 add_executable(
     TetrisTest
     tests/test.cpp
+    tests/board_test.cpp
 )
 target_link_libraries(
     TetrisTest
     GTest::gtest_main
 )
 include(GoogleTest)
+target_include_directories(TetrisTest PRIVATE includes)
+target_link_libraries(TetrisTest sfml-graphics)
+target_compile_features(TetrisTest PRIVATE cxx_std_20)
 gtest_discover_tests(TetrisTest)
 
 add_executable(Tetris src/main.cpp)
