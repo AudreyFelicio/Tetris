@@ -91,7 +91,7 @@ private:
 
   auto updateScore() -> void {
     std::ostringstream oss;
-    oss << SCORE << std::setw(4) << std::setfill(' ') << std::right << ++current_score;
+    oss << SCORE << std::setw(5) << std::setfill(' ') << std::right << ++current_score;
     score.setString(oss.str());
   }
 };

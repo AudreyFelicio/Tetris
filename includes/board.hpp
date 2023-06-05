@@ -44,6 +44,7 @@ public:
     }
 
   auto draw(sf::RenderWindow& window) const -> void {
+    // window.draw(background);
     const auto points = next_active.getPoints();
     for (const auto [y, x] : points) {
       sf::Sprite curr_block = blocks[next_active.getBlockType()];
